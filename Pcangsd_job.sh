@@ -3,19 +3,17 @@
 ### Account information
 #PBS -W group_list=ku_00004 -A ku_00004
 ### Job name (comment out the next line to get the name of the script used as the job name)
-#PBS -N plink
+#PBS -N pcangsd
 ### Output files (comment out the next 2 lines to get the job name used instead)
-##PBS -e beagle_fatnode.err
-##PBS -o beagle_fatnode.log
+##PBS -e pcanagsd_test.err
+##PBS -o pcangsd.log
 ### Only send mail when job is aborted or terminates abnormally
-#PBS -m bea
-#PBS -M jd@ign.ku.dk
+#PBS -m n
 ### Number of nodes, request 196 cores from 7 nodes
 #PBS -l nodes=1:ppn=40:thinnode
 ### Requesting time - 720 hours
-#PBS -l walltime=8:00:00
+#PBS -l walltime=24:00:00
 #PBS -l mem=188gb
-
  
 ### Here follows the user commands:
 # Go to the directory from where the job was submitted (initial directory is $HOME)
@@ -25,10 +23,16 @@ cd $PBS_O_WORKDIR
 NPROCS=`wc -l < $PBS_NODEFILE`
 echo This job has allocated $NPROCS nodes
   
-module load tools parallel/20210722  plink2/1.90beta6.24
+module load tools anaconda2/4.4.0 pcangsd/0.97 
+ 
+export OMP_NUM_THREADS=60
+# Using 192 cores for MPI threads leaving 4 cores for overhead, '--mca btl_tcp_if_include ib0' forces InfiniBand interconnect for improved latency
+#mpirun -np 40 $mdrun -s gmx5_double.tpr -plumed plumed2_path_re.dat -deffnm md-DTU -dlb yes -cpi md-DTU -append --mca btl_tcp_if_include ib0
 
-dir=$(pwd)
+
 folder=$(echo $(pwd) | sed -e 's/.*folder\(.*\)_out.*/\1/')
 
-ls /home/projects/ku_00004/data/James/mapped_bam_files/Tjaerby_gwas/folder"$folder"_out/Plink_files/* | cut -f1,2 -d'.' | parallel -j 16 "plink -indep-pairwise 50 5 0.5 --tfile {} -allow-extra-chr --out "$dir"/Plink_out/awk_ready_.{/}"
-
+gzip new_file"$folder".txt
+python /home/projects/ku_00004/apps/pcangsd/pcangsd.py -beagle new_file"$folder".txt.gz -o pca_486  -iter 100 
+#-admix -admix_iter 100 -selection -inbreed 1 -kinship
+#combined_beagle_pruned_gl.txt.gz
