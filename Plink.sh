@@ -14,6 +14,8 @@
 #PBS -l nodes=1:ppn=40:thinnode
 ### Requesting time - 720 hours
 #PBS -l walltime=8:00:00
+#PBS -l mem=188gb
+
  
 ### Here follows the user commands:
 # Go to the directory from where the job was submitted (initial directory is $HOME)
@@ -28,5 +30,5 @@ module load tools parallel/20210722  plink2/1.90beta6.24
 dir=$(pwd)
 folder=$(echo $(pwd) | sed -e 's/.*folder\(.*\)_out.*/\1/')
 
-ls /home/projects/ku_00004/data/mapped_bam_files/split_1_multi/folder"$folder"_out/Plink_files/* | cut -f1,2 -d'.' | parallel -j 16 "plink -indep-pairwise 50 5 0.5 --tfile {} -allow-extra-chr --out "$dir"/Plink_out_"$folder"/awk_ready_.{/}"
+ls /home/projects/ku_00004/data/James/mapped_bam_files/Tjaerby_gwas/folder"$folder"_out/Plink_files/* | cut -f1,2 -d'.' | parallel -j 16 "plink -indep-pairwise 50 5 0.5 --tfile {} -allow-extra-chr --out "$dir"/Plink_out/awk_ready_.{/}"
 
