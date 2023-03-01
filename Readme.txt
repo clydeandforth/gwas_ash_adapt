@@ -9,4 +9,8 @@
 
 5. After getting likelihoods imputation can begin in Beagle.sh. At the same time linked SNPs can be found using Plink.sh and Awk.sh to create pruned genotype likelihoods. The pruned likelihoods can be used for PCAs using Pcangsd_job.sh
 
-6. The assssssociation can then be run using Angsd with Association_job.sh
+6. The asssociation can then be run using Angsd with Association_job.sh
+
+7. To call genotypes for random forests, first format genotype probabilities in Beagle format to Vcf. I used the fcgene program for this. Then use vcf2hapmap.py to convert vcf to hapmap with called genotypes.
+
+
